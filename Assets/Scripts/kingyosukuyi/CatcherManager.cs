@@ -14,17 +14,24 @@ namespace GoldfishScoping {
         public bool isScoping = false;
         public bool isUsePoi = false;
         public PoiController poi;
+        public bool isConnected = false;
+        public float Pitch, Roll;
         
         private void Start () {
             rb = GetComponent<Rigidbody> ();
             resetPos = transform.position;
-            Invoke("Calibration",0.9f);
+            if (isConnected) {
+                Invoke ("Calibration", 0.9f);
+            }
         }
         void Calibration () {
             benchmark.Set (pitch, 0, roll);
         }
         void FixedUpdate () {
-            UpdateData ();
+            if (isConnected) {
+                UpdateData ();
+                
+            }
             rot.Set (-eulerAngles.x, 0, eulerAngles.z);
             transform.eulerAngles = rot;
 
@@ -32,6 +39,12 @@ namespace GoldfishScoping {
             pitch = Mathf.Abs (pitch - benchmark.x) < 4 ? 0 : pitch - benchmark.x;
             //Debug.Log (roll+":"+ pitch);
 
+            if (!isConnected) {
+                roll = Roll;
+                pitch = Pitch;
+                rot.Set (roll, 0, pitch);
+                transform.eulerAngles = rot;
+            }
 
             //move
             v = new Vector3(-roll * moveSpeed * Time.fixedDeltaTime,0, -pitch * moveSpeed * Time.fixedDeltaTime);

@@ -7,7 +7,6 @@ namespace GoldfishScoping {
 
         public Rigidbody rb;
         public Vector3 wanderTarget;
-        public Collider wall;
         private Ray wallAvoidanceRay;
         private RaycastHit wallHit;
         public Vector3 acceleration;
@@ -33,8 +32,15 @@ namespace GoldfishScoping {
 
             velocity += acceleration * Time.fixedDeltaTime;
             velocity = Vector3.ClampMagnitude (velocity, Params.Instance.maxSpeed);
-            if (wall.bounds.Contains (rb.position + velocity)) {
+            if (Params.Instance.wall.bounds.Contains (rb.position + velocity)) {
                 rb.velocity = velocity;
+
+                if (rb.position.y > 1.1f) {
+                    rb.velocity += -9.8f * Vector3.up;
+                }else if (rb.position.y < 0.9f) {
+                        rb.velocity += 9.8f * Vector3.up;
+                    }
+
             }
             transform.forward = velocity;
         }
@@ -126,14 +132,15 @@ namespace GoldfishScoping {
 
             return force;
         }
-
         //flocking
         public List<Transform> neighbors;
         private void OnTriggerEnter (Collider other) {
-            neighbors.Add (other.transform);
+            if(other.isTrigger==true)
+                neighbors.Add (other.transform);
         }
         private void OnTriggerExit (Collider other) {
-            neighbors.Remove (other.transform);
+            if(other.isTrigger==true)
+                neighbors.Remove (other.transform);
         }
         public Vector3 Separation () {
             Vector3 steeringAcce = Vector3.zero;
@@ -173,7 +180,7 @@ namespace GoldfishScoping {
         private void OnDrawGizmos () {
             //Environment
             Gizmos.color = Color.white;
-            Gizmos.DrawWireCube (wall.transform.position, wall.bounds.size);
+            Gizmos.DrawWireCube (Params.Instance.wall.transform.position, Params.Instance.wall.bounds.size);
             //Wander
             if (Params.Instance.wanderEnabled) {
                 Gizmos.color = new Color (0.5f, 0.9f, 1, 0.4f);

@@ -15,7 +15,6 @@ namespace GoldfishScoping {
             instance = this;
         }
 
-
         [Header ("State")]
         public float idleTime = 10;
         public float swimTime = 20;
@@ -28,6 +27,7 @@ namespace GoldfishScoping {
         public bool alignmentEnabled = true;
         public bool cohesionEnabled = true;
         [Header ("Steering Parameters")]
+        public Collider wall;
         [Range (0f, 5f)]
         public float wallAvoidanceWeight = 1;
         [Range (0f, 5f)]
